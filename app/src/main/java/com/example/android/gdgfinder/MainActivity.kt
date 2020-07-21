@@ -20,21 +20,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        setupNavigation()
+        setupNavigation() //Эта функция см внизу
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 
     /**
      * Called when the hamburger menu or back button are pressed on the Toolbar
-     *
+     *Вызывается при нажатии меню гамбургера или кнопки назад на панели инструментов
      * Delegate this to Navigation.
+     * Представитель этой навигации
      */
     override fun onSupportNavigateUp()
             = navigateUp(findNavController(R.id.nav_host_fragment), binding.drawerLayout)
 
     /**
      * Setup Navigation for this Activity
+     * Настройка навигации для этого вида деятельности
      */
     private fun setupNavigation() {
         // first find the nav controller
@@ -47,8 +49,9 @@ class MainActivity : AppCompatActivity() {
 
 
         // finally setup the left drawer (called a NavigationView)
+        //наконец, установите левый ящик (называемый навигационным видом)
         binding.navigationView.setupWithNavController(navController)
-
+        // шторку выдвигать только на странице Home, а на других страницах скрыть
         navController.addOnDestinationChangedListener { _, destination: NavDestination, _ ->
             val toolBar = supportActionBar ?: return@addOnDestinationChangedListener
             when(destination.id) {

@@ -2,9 +2,11 @@
           xmlns:tools="http://schemas.android.com/tools" package="com.example.android.gdgfinder">
 
     <!-- In order for our app to access the Internet, we need to define this permission. -->
+    <!-- Для того, чтобы наше приложение могло получить доступ к интернету, нам нужно определить это разрешение. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- To access the location we need to ask for permission -->
+    <!-- Чтобы получить доступ к этому месту, нам нужно попросить разрешения -->
     <!-- see https://developer.android.com/training/location/retrieve-current.html -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
