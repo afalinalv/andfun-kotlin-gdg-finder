@@ -5,16 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
+import androidx.navigation.findNavController
 import com.example.android.gdgfinder.R
+import com.example.android.gdgfinder.databinding.HomeFragmentBinding
 
 class HomeFragment : Fragment() {
 
     companion object {
         fun newInstance() = HomeFragment()
     }
-
-    private lateinit var viewModel: HomeViewModel
+    private val viewModel by viewModels<HomeViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,13 +24,18 @@ class HomeFragment : Fragment() {
     ): View? {
         // TODO (06) Create a binding to the home_fragment layout and tell the binding
         // about the viewModel.
-
-        val view = inflater.inflate(R.layout.home_fragment, container, false)
-        viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-
+        val binding = HomeFragmentBinding.inflate(inflater)
+        binding.viewModel = viewModel
+        // binding.lifecycleOwner = viewLifecycleOwner Не надо по их
         // TODO (07)  Register an observer on navigateToSearch, and have it navigate
         // to gdgListFragment if shouldNavigate is true.
-
-        return view
+        viewModel.navigateToSearch.observe(viewLifecycleOwner) { nav ->
+            if (nav) {
+                binding.root.findNavController()
+                .navigate(R.id.action_homeFragment_to_gdgListFragment)
+                viewModel.onNavigatedToSearch()
+            }
+        }
+        return binding.root
     }
 }
