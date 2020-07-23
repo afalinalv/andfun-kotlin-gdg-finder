@@ -10,10 +10,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.android.gdgfinder.databinding.FragmentGdgListBinding
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.chip.Chip
 import com.example.android.gdgfinder.R
 
 private const val LOCATION_PERMISSION_REQUEST = 1
@@ -24,7 +25,7 @@ class GdgListFragment : Fragment() {
 
 
     private val viewModel: GdgListViewModel by lazy {
-        ViewModelProviders.of(this).get(GdgListViewModel::class.java)
+        ViewModelProvider(this).get(GdgListViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +61,55 @@ class GdgListFragment : Fragment() {
 
         // TODO (04) Create an observer on viewModel.regionList. Override the required
         // onChanged() method to include the following changes.
+        // ЧИПСЫ:
+        // Создайте наблюдателя для определения ChipGroup и добавления Chips:
+
+        // 1. Добавить наблюдателя на viewModel.regionList.
+        // наблюдателя viewModel.regionList и переопределите onChanged().
+        // Когда список регионов, предоставленных моделью представления, изменяется, чипы должны быть воссозданы
+        viewModel.regionList.observe(viewLifecycleOwner, object: Observer<List<String>> {
+            override fun onChanged(data: List<String>?) {
+                data ?: return  //  немедленно вернуться , если поставляемое в комплекте dataесть null
+
+                // 2. Создать chipGroupи inflatorпеременные.
+                // chipGroup которая вызывается для кэширования regionList.
+                val chipGroup = binding.regionList
+                // новый layoutInflator для надувания чипсов chipGroup.context
+                val inflator = LayoutInflater.from(chipGroup.context)
+                // Очистите и перестройте свой проект, чтобы избавиться от ошибки привязки данных.
+
+                // 3. создайте переменную children для хранения всех фишек.
+                // Присвойте ему функцию отображения на переданном входе, data чтобы создать и вернуть каждый чип.
+                // Создайте Chip для каждого regionsListэлемента.
+                //Используйте map функцию, чтобы перебрать regionsList и создать Chip для каждого элемента
+                val children = data.map { regionName ->
+                    // для каждого regionName создайте и надуйте фишку
+                    val chip = inflator.inflate(R.layout.region, chipGroup, false) as Chip
+                    chip.text = regionName
+                    chip.tag = regionName
+                    // TODO: Click listener goes here.
+                    // добавьте прослушиватель щелчков для ЧИПСОВ.
+                    chip.setOnCheckedChangeListener { button, isChecked ->
+                        // Когда chipнажата кнопка, установите ее состояние на checked
+                        // Вызов onFilterChanged()в viewModel, который запускает последовательность событий,
+                        // которая извлекает результат для этого фильтра
+                        viewModel.onFilterChanged(button.tag as String, isChecked)
+
+
+                    }
+                    chip
+                }
+                // 4. Удалите виды, которые уже есть chipGroup.
+                // В конце lamba удалите все текущие представления из chipGroup, затем добавьте все фишки из children в chipGroup.
+                // (Вы не можете обновить чипы, поэтому вы должны удалить и воссоздать содержимое chipGroup.
+                chipGroup.removeAllViews()
+
+                // 5. Наконец, итерируйте по списку, children чтобы добавить каждого chip к chipGroup:
+                for (chip in children) {
+                    chipGroup.addView(chip)
+                }
+            }
+        })
 
         // TODO (05) Create a new layoutInflator from the ChipGroup.
 
